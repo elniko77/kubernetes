@@ -7,4 +7,8 @@ El script está configurado para crear un master y dos nodos, y está pensado pa
 Se ejecuta desde una terminal de wsl, como 
 
     $ ./crear_cluster.sh
-    
+
+Para usarlo se debe configurar la variable de entorno para leer la config:
+
+    $ export KUBECONFIG=kubeconfig
+    $ kubectl get node -o wide
