@@ -12,13 +12,13 @@ WORKER1="k3sup-worker1"
 WORKER2="k3sup-worker2" 
 
 # Bajar e instalar k3sup
-#curl -sLS https://get.k3sup.dev | sh
-#sudo cp k3sup /usr/local/bin/k3sup
+curl -sLS https://get.k3sup.dev | sh
+sudo cp k3sup /usr/local/bin/k3sup
 
 # Crear las vms
-#$MULTIPASS launch --name $MASTER --cpus $CPUS --mem $MEM --disk $DISCO $UBUNTUVER
-#$MULTIPASS launch --name $WORKER1 --cpus $CPUS --mem $MEM --disk $DISCO $UBUNTUVER  
-#$MULTIPASS launch --name $WORKER2 --cpus $CPUS --mem $MEM --disk $DISCO $UBUNTUVER
+$MULTIPASS launch --name $MASTER --cpus $CPUS --mem $MEM --disk $DISCO $UBUNTUVER
+$MULTIPASS launch --name $WORKER1 --cpus $CPUS --mem $MEM --disk $DISCO $UBUNTUVER  
+$MULTIPASS launch --name $WORKER2 --cpus $CPUS --mem $MEM --disk $DISCO $UBUNTUVER
 
 # Transferir las llaves publicas a las instancias
 $MULTIPASS transfer ~/.ssh/id_rsa.pub $MASTER:
