@@ -1,0 +1,39 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: nginx-route
+  namespace: default
+spec:
+  entryPoints:
+    #- http
+    - web
+  routes:
+  - match: Host(`test.domain.com`)
+    kind: Rule
+    services:
+    - name: nginx-service
+      port: 80
+
+---
+# Here we are defining two routes one in http and another one in https
+# If you have kept the global http to https redirecting you don't need the http route
+# as all traffic will be redirected automatically
+# I just left it here for you to see the difference between the two
+
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: nginx-route-secure
+  namespace: default
+spec:
+  entryPoints:
+    #- https
+    - web-secure
+  routes:
+  - match: Host(`test.domain.com`)
+    kind: Rule
+    services:
+    - name: nginx-service
+      port: 80
+  tls:
+    certResolver: certresolver

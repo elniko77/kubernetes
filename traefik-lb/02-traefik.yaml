@@ -1,0 +1,73 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  namespace: default
+  name: traefik-ingress-controller
+
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  namespace: default
+  name: traefik
+  labels:
+    app: traefik
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: traefik
+  template:
+    metadata:
+      labels:
+        app: traefik
+    spec:
+      serviceAccountName: traefik-ingress-controller
+      containers:
+        - name: traefik
+          image: traefik:v2.3 # you might have a higher version by the time you reading this
+          args:
+            # This should not be setup when you are in production as it creates a dashboard that can be accessed by anyone
+            # but for our test needs it is great just remember to remove it 
+            #- --insecure.api
+            - --api.insecure=true
+            - --accesslog
+
+            # Here we define our entry points we have two of them one at 80 (we call it web) and one at 443 (we call it websecure)
+            - --entrypoints.web.Address=:80
+            # Traefik handles automatic redirections from http to https and it's done like so
+            # feel free to comment that in the first time if you want to test your http endpoint
+            - --entrypoints.web.http.redirections.entryPoint.to=web-secure
+            - --entrypoints.web.http.redirections.entryPoint.scheme=https
+            - --entrypoints.web.http.redirections.entrypoint.permanent=true
+            - --entrypoints.web-secure.Address=:443
+            
+            # I still need to read about providers but basically we need that 
+            - --providers.kubernetescrd
+
+            # This part is the part that will generate our ssl certificates
+            # I invite you to read a bit more about this, you will need your own domain name in order to use it
+            # Traefik has a nice documentation on the different options but in the meantime here is what I used
+            - --certificatesresolvers.certresolver.acme.tlschallenge # many challenges exists you must see what you prefer/need
+            - --certificatesresolvers.certresolver.acme.email=your@email.com # replace this with your mail
+            
+            # This file will store our certificates, I do not use a volume to store this so everytime traefik reboot it will destroyed
+            # this is fine for our dev purposes but you might want to have a volume when you go live with your cluster 
+            # it is important for you to know that we will use letsencrypt and it has restrictions on the amount of certificates we can ask for
+            # if you ask more then X certificate for test.domain.com you will be throttled and will have to wait to have your certificate
+            # here we are going to use the staging server so we can make sure the certificate validation works and then we will remove the staging and go for real certs
+            - --certificatesresolvers.certresolver.acme.storage=acme.json 
+            # here we setup who will give us certificates we chose the staging server as explained above as we want to make sure it works first
+            # to have real certificate remove staging from the link below
+            - --certificatesresolvers.certresolver.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory
+          # here we are opening ports in order to access later traefik
+          # we have the usual 80 and 443 but also 8080 this last one is where the traefik dashboard is deployed
+          # for testing it is ok but remember we set this as insecure so in the future we must protect this or simple not make it acessible
+          ports:
+            - name: http
+              containerPort: 80
+            - name: https
+              containerPort: 443
+            - name: admin
+              containerPort: 8080
