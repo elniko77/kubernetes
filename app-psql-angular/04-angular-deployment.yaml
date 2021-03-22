@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+ 
+kind: Deployment
+ 
+metadata:
+   name: angular
+   namespace: default
+ 
+spec:
+   selector:
+      matchLabels:
+         app: angular
+   replicas: 1
+ 
+   template:
+      metadata:
+         name: angular
+         labels:
+            app: angular
+ 
+      spec:
+         containers:
+            - name: angular
+              image: 'karthi4india/orderui:latest'
+              imagePullPolicy: Always
+ 
+              volumeMounts:
+                - name: env-vars
+                  mountPath: /usr/local/apache2/htdocs/assets
+ 
+         volumes:
+              - name: env-vars
+ 
+                configMap:
+                  name: angular-env-vars
+---
+ 
+apiVersion: v1
+kind: Service
+ 
+metadata:
+  name: angular
+  labels:
+    app: angular
+ 
+spec:
+  type: NodePort
+  ports:
+   - port: 4200
+ 
+  selector:
+   app: angular
