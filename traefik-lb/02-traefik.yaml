@@ -38,9 +38,9 @@ spec:
             - --entrypoints.web.Address=:80
             # Traefik handles automatic redirections from http to https and it's done like so
             # feel free to comment that in the first time if you want to test your http endpoint
-            - --entrypoints.web.http.redirections.entryPoint.to=web-secure
-            - --entrypoints.web.http.redirections.entryPoint.scheme=https
-            - --entrypoints.web.http.redirections.entrypoint.permanent=true
+            #- --entrypoints.web.http.redirections.entryPoint.to=web-secure
+            #- --entrypoints.web.http.redirections.entryPoint.scheme=https
+            #- --entrypoints.web.http.redirections.entrypoint.permanent=true
             - --entrypoints.web-secure.Address=:443
             
             # I still need to read about providers but basically we need that 
