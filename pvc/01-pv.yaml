@@ -9,11 +9,11 @@ spec:
  volumeMode: Filesystem
  accessModes:
    - ReadWriteOnce
- persistentVolumeReclaimPolicy: Recycle
+ persistentVolumeReclaimPolicy: Retain
  storageClassName: slow
  mountOptions:
    - hard
    - nfsvers=4.1
  nfs:
-   path:  /nfsdata 
+   path:  /nfsdata/nginx1 
    server: 192.168.1.101
