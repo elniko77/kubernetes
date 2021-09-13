@@ -1,0 +1,14 @@
+# Ejemplo de un claim, que pide 2gb de la clase slow
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+ name: myclaim
+spec:
+ accessModes:
+   - ReadWriteOnce
+ volumeMode: Filesystem
+ resources:
+   requests:
+     storage: 2Gi
+ storageClassName: slow
+ 

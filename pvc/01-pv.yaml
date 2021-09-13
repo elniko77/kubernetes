@@ -1,0 +1,19 @@
+# Ejemplo de pv, apuntando a un servdor nfs que corre en la rpi.
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+ name: nfsdata
+spec:
+ capacity:
+   storage: 5Gi
+ volumeMode: Filesystem
+ accessModes:
+   - ReadWriteOnce
+ persistentVolumeReclaimPolicy: Recycle
+ storageClassName: slow
+ mountOptions:
+   - hard
+   - nfsvers=4.1
+ nfs:
+   path:  /nfsdata 
+   server: 192.168.1.101
