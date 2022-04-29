@@ -1,0 +1,52 @@
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: smb-server
+  labels:
+    app: smb-server
+spec:
+  type: LoadBalancer
+  selector:
+    app: smb-server
+  ports:
+    - port: 445
+      name: smb-server
+      targetPort: 445
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: smb-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: smb-server
+  template:
+    metadata:
+      name: smb-server
+      labels:
+        app: smb-server
+    spec:
+      containers:
+        - name: smb-server
+          image: servercontainers/samba
+          env:
+            - name: ACCOUNT_USERNAME # Need to figure out how to add user from secret here
+              #value: $(PASSWORD)
+              value: "nss"
+            - name: SAMBA_VOLUME_CONFIG_username # Need to figure out how to add user from secret here
+              value: '[nss share]; path=/smbshare/; guest ok=yes; read only = no; browseable = yes'
+          volumeMounts:
+            - mountPath: /smbshare
+              name: data-volume
+          ports:
+            - containerPort: 445
+              hostPort: 445
+      volumes:
+        - name: data-volume
+          hostPath:
+            path: /smbshare
+            type: DirectoryOrCreate
+
