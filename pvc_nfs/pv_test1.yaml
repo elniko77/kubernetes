@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv01                  # A generic storage unit with a generic name
+ 
+spec:
+  capacity:
+    storage: 500Mi             # The amount of storage the PV offers
+  accessModes:                # How the volume can be accessed by Pods
+    - ReadWriteOnce           # It can only be used by one Pod.    
+                           
+  nfs:                                # This PV is backed by NFS.  
+    server: 192.168.41.85            # Domain name of the NFS server
+    path: "/nfsdata"       # Path to the NFS share
